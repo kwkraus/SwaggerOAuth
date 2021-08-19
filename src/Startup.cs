@@ -31,6 +31,8 @@ namespace SwaggerOAuth
 
             services.AddSwaggerGen(c =>
             {
+                var instance = $"https://login.microsoftonline.com/{Configuration["AzureAd:TenantId"]}";
+
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SwaggerOAuth", Version = "v1" });
                 c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
                 {
@@ -39,9 +41,9 @@ namespace SwaggerOAuth
                     {
                         Implicit = new OpenApiOAuthFlow()
                         {
-                            TokenUrl = new Uri($"https://login.microsoftonline.com/5a4bc47e-a75d-4b3e-b217-003cc10d57b2/oauth2/v2.0/token"),
-                            AuthorizationUrl = new Uri($"https://login.microsoftonline.com/5a4bc47e-a75d-4b3e-b217-003cc10d57b2/oauth2/v2.0/authorize"),
-                            Scopes = { { "api://2e4c661d-8019-4be5-a33e-d50bcd0458d4/full", "Full access" } }
+                            TokenUrl = new Uri($"{instance}/oauth2/v2.0/token"),
+                            AuthorizationUrl = new Uri($"{instance}/oauth2/v2.0/authorize"),
+                            Scopes = { { Configuration["SwaggerOAuth:Scope"], Configuration["SwaggerOAuth:ScopeName"] } }
                         }
                     }
                 });
@@ -79,8 +81,8 @@ namespace SwaggerOAuth
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "SwaggerOAuth v1");
-                    c.OAuthClientId("fb1a1ea2-2521-45c6-bf56-d633ab272887");
-                    c.OAuthClientSecret("5OW8DOFu~bvL7u7IV7~5x07~hSiZ~.yR7e");
+                    c.OAuthClientId(Configuration["SwaggerOAuth:OAuthClientId"]);
+                    c.OAuthClientSecret(Configuration["SwaggerOAuth:OAuthClientSecret"]);
                 });
             }
 
